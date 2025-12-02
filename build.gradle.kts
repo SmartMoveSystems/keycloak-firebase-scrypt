@@ -58,6 +58,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.4"
+        gradleVersion = "9.1.0"
     }
 }
