@@ -3,11 +3,11 @@ plugins {
 }
 
 group = "com.smartmovesystems.keycloak.firebasescrypt"
-version = "3.0.3"
+version = "3.0.4"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -18,8 +18,9 @@ dependencies {
     val scryptVersion = "1.4.0"
     val commonsCodecVersion = "1.4"
     val jbossLoggingVersion = "3.4.1.Final"
-    val keycloakVersion = "12.0.4"
-    val jUnitVersion = "4.13"
+    val keycloakVersion = "26.4.6" //"12.0.4"
+    val jUnitVersion = "5.10.0"
+    val quarkusVersion = "3.27.0"
 
     // Scrypt
     implementation("com.lambdaworks:scrypt:$scryptVersion")
@@ -37,7 +38,14 @@ dependencies {
     compileOnly("org.keycloak:keycloak-model-jpa:$keycloakVersion")
     compileOnly("org.keycloak:keycloak-server-spi-private:$keycloakVersion")
 
-    testImplementation("junit:junit:$jUnitVersion")
+    // @NoCache
+    compileOnly("io.quarkus.resteasy.reactive:resteasy-reactive-common:$quarkusVersion")
+
+    // JUnit
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${jUnitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher") //:1.10.0
+
     testImplementation("org.keycloak:keycloak-common:$keycloakVersion")
     testImplementation("org.keycloak:keycloak-core:$keycloakVersion")
     testImplementation("org.keycloak:keycloak-server-spi:$keycloakVersion")
@@ -58,6 +66,10 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "9.1.0"
+        gradleVersion = "9.2"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

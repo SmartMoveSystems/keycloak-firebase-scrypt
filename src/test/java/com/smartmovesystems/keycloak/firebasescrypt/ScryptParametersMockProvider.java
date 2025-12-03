@@ -1,6 +1,6 @@
 package com.smartmovesystems.keycloak.firebasescrypt;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

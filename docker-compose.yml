@@ -1,4 +1,4 @@
-version: '3'
+#version: '4'
 
 volumes:
   mysql_data:
@@ -6,7 +6,7 @@ volumes:
 
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
@@ -14,22 +14,50 @@ services:
       MYSQL_DATABASE: keycloak
       MYSQL_USER: keycloak
       MYSQL_PASSWORD: ${MYSQL_KC_PASSWORD}
+    hostname: mysql
     ports:
       - 3306:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   keycloak:
+#    image: quay.io/keycloak/keycloak:26.4.6
     build: ./docker
     environment:
-      DB_VENDOR: MYSQL
-      DB_ADDR: mysql
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: ${MYSQL_KC_PASSWORD}
+      KC_DB: mysql
+      KC_DB_URL_HOST: mysql
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${MYSQL_KC_PASSWORD}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KC_HOSTNAME_STRICT: false
+      KC_PROXY: edge # Recommended when Keycloak is behind a reverse proxy
 #      KEYCLOAK_LOGLEVEL: DEBUG
 #      KEYCLOAK_FRONTEND_URL: ${KC_KEYCLOAK_FRONTEND_URL}
+      KC_HTTP_RELATIVE_PATH: "/auth"
+      JDBC_PARAMS: "?useSSL=false&allowPublicKeyRetrieval=true"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    hostname: keycloak
     ports:
       - 8080:8080
+#    security_opt:
+#      - 'label:disable'
+    command: [ "start",
+               "--hostname=localhost",
+               "--http-enabled=true",
+               "--hostname-strict=false",
+               "--db=$${KC_DB}",
+               "--db-url-host=$${KC_DB_URL_HOST}",
+               "--db-url=jdbc:mysql://$${KC_DB_URL_HOST}:3306/$${KC_DB_URL_DATABASE}?characterEncoding=UTF-8",
+               "--db-username=$${KC_DB_USERNAME}",
+               "--db-password=$${KC_DB_PASSWORD}",
+               "--http-relative-path=$${KC_HTTP_RELATIVE_PATH}"] # [ "start-dev" ]

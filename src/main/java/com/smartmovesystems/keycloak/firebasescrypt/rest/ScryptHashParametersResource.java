@@ -2,12 +2,12 @@ package com.smartmovesystems.keycloak.firebasescrypt.rest;
 
 import com.smartmovesystems.keycloak.firebasescrypt.ScryptHashParametersRepresentation;
 import com.smartmovesystems.keycloak.firebasescrypt.ScryptParametersProvider;
-import org.jboss.resteasy.annotations.cache.NoCache;
+import org.jboss.resteasy.reactive.NoCache;
 import org.keycloak.models.KeycloakSession;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 public class ScryptHashParametersResource {

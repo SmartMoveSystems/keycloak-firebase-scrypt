@@ -7,7 +7,7 @@ import com.smartmovesystems.keycloak.firebasescrypt.jpa.ScryptParametersEntityPr
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.KeycloakSession;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 

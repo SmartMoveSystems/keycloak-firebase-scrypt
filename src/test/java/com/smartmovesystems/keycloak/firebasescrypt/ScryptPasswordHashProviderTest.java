@@ -2,14 +2,16 @@ package com.smartmovesystems.keycloak.firebasescrypt;
 
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.keycloak.credential.hash.Pbkdf2Sha512PasswordHashProviderFactory; // using Pbkdf2Sha512PasswordHashProviderFactory.ID that was org.keycloak.models.PasswordPolicy.HASH_ALGORITHM_DEFAULT
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.credential.PasswordCredentialModel;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ScryptPasswordHashProviderTest {
 
@@ -18,7 +20,7 @@ public class ScryptPasswordHashProviderTest {
     private ScryptHashParametersRepresentation parametersEntityTwo;
     private ScryptParametersMockProvider mockProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mockProvider = new ScryptParametersMockProvider();
 
@@ -45,6 +47,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("policyCheck")
     public void policyCheck() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -60,6 +63,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("policyCheckWrongPolicyAlgorithm")
     public void policyCheckWrongPolicyAlgorithm() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -68,16 +72,17 @@ public class ScryptPasswordHashProviderTest {
                 "lSrfV15cpx95/sZS2W9c9Kp6i/LVgQNDNC/qzrCnh1SAyZvqmZqAjTdn3aoItz+VHjoZilo78198JAdRuid5lQ=="
         );
         PasswordPolicy policy = PasswordPolicy.build()
-                .put(PasswordPolicy.HASH_ALGORITHM_ID, PasswordPolicy.HASH_ALGORITHM_DEFAULT)
+                .put(PasswordPolicy.HASH_ALGORITHM_ID, Pbkdf2Sha512PasswordHashProviderFactory.ID)
                 .build(new KeycloakSessionMock());
         boolean valid = hashProvider.policyCheck(policy, model);
         assertFalse(valid);
     }
 
     @Test
+    @DisplayName("policyCheckWrongCredentialAlgorithm")
     public void policyCheckWrongCredentialAlgorithm() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
-                PasswordPolicy.HASH_ALGORITHM_DEFAULT,
+                Pbkdf2Sha512PasswordHashProviderFactory.ID,
                 Base64.decodeBase64("42xEC+ixf3L2lw=="),
                 0,
                 "lSrfV15cpx95/sZS2W9c9Kp6i/LVgQNDNC/qzrCnh1SAyZvqmZqAjTdn3aoItz+VHjoZilo78198JAdRuid5lQ=="
@@ -90,14 +95,16 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("encodedCredential")
     public void encodedCredential() {
         // Expect to use default hash parameters
-        String expected = "{\"value\":\"lSrfV15cpx95/sZS2W9c9Kp6i/LVgQNDNC/qzrCnh1SAyZvqmZqAjTdn3aoItz+VHjoZilo78198JAdRuid5lQ==$" + parametersEntityOne.id + "\",\"salt\":\"42xEC+ixf3L2lw==\"}";
+        String expected = "{\"value\":\"lSrfV15cpx95/sZS2W9c9Kp6i/LVgQNDNC/qzrCnh1SAyZvqmZqAjTdn3aoItz+VHjoZilo78198JAdRuid5lQ==$" + parametersEntityOne.id + "\",\"salt\":\"42xEC+ixf3L2lw==\",\"additionalParameters\":{}}";
         PasswordCredentialModel encoded = hashProvider.encodedCredential("user1password", 0);
         assertEquals(expected, encoded.getSecretData());
     }
 
     @Test
+    @DisplayName("encodedCredentialWithoutDefault")
     public void encodedCredentialWithoutDefault() {
         mockProvider.clear();
         PasswordCredentialModel model = hashProvider.encodedCredential("test", 0);
@@ -106,6 +113,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyWithoutDefault")
     public void verifyWithoutDefault() {
         mockProvider.clear();
         boolean verified = hashProvider.verify("test", hashProvider.encodedCredential("test", 0));
@@ -113,6 +121,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserOne")
     public void verifyUserOne() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -128,6 +137,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserOneBadPassword")
     public void verifyUserOneBadPassword() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -143,6 +153,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserTwo")
     public void verifyUserTwo() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -158,6 +169,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserTwoBadPassword")
     public void verifyUserTwoBadPassword() {
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
                 ScryptPasswordHashProviderFactory.ID,
@@ -173,6 +185,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserThree")
     public void verifyUserThree() {
         // Use non-default parameters
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
@@ -189,6 +202,7 @@ public class ScryptPasswordHashProviderTest {
     }
 
     @Test
+    @DisplayName("verifyUserThreeBadPassword")
     public void verifyUserThreeBadPassword() {
         // Use non-default parameters
         PasswordCredentialModel model = PasswordCredentialModel.createFromValues(
