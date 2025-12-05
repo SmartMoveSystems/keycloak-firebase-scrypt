@@ -7,13 +7,14 @@ volumes:
 services:
   mysql:
     image: mysql:8.0
+    container_name: mysql
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: keycloak
-      MYSQL_USER: keycloak
-      MYSQL_PASSWORD: ${MYSQL_KC_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+      MYSQL_DATABASE: ${MYSQL_KC_DATABASE:-keycloak}
+      MYSQL_USER: ${MYSQL_KC_USER:-keycloak}
+      MYSQL_PASSWORD: ${MYSQL_KC_PASSWORD:-admin}
     hostname: mysql
     ports:
       - 3306:3306
@@ -27,37 +28,47 @@ services:
   keycloak:
 #    image: quay.io/keycloak/keycloak:26.4.6
     build: ./docker
+    container_name: keycloak
     environment:
       KC_DB: mysql
       KC_DB_URL_HOST: mysql
-      KC_DB_URL_DATABASE: keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: ${MYSQL_KC_PASSWORD}
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KC_DB_URL_PORT: 3306
+      KC_DB_URL_DATABASE: ${MYSQL_KC_DATABASE:-keycloak}
+      KC_DB_URL_PROPERTIES: "?characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true"
+      KC_DB_USERNAME: ${MYSQL_KC_USER:-keycloak}
+      KC_DB_PASSWORD: ${MYSQL_KC_PASSWORD:-admin}
+
+#      KEYCLOAK_ADMIN: admin
+#      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+#      KEYCLOAK_USER: admin
+#      KEYCLOAK_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+#      KC_HOSTNAME: localhost
       KC_HOSTNAME_STRICT: false
+      KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge # Recommended when Keycloak is behind a reverse proxy
+      KC_LOG: console,file,syslog
 #      KEYCLOAK_LOGLEVEL: DEBUG
 #      KEYCLOAK_FRONTEND_URL: ${KC_KEYCLOAK_FRONTEND_URL}
+      KC_HTTP_ENABLED: true
       KC_HTTP_RELATIVE_PATH: "/auth"
-      JDBC_PARAMS: "?useSSL=false&allowPublicKeyRetrieval=true"
+#      JDBC_PARAMS: "?useSSL=false&allowPublicKeyRetrieval=true"
     depends_on:
       mysql:
         condition: service_healthy
     hostname: keycloak
     ports:
       - 8080:8080
-#    security_opt:
-#      - 'label:disable'
-    command: [ "start",
-               "--hostname=localhost",
-               "--http-enabled=true",
-               "--hostname-strict=false",
-               "--db=$${KC_DB}",
-               "--db-url-host=$${KC_DB_URL_HOST}",
-               "--db-url=jdbc:mysql://$${KC_DB_URL_HOST}:3306/$${KC_DB_URL_DATABASE}?characterEncoding=UTF-8",
-               "--db-username=$${KC_DB_USERNAME}",
-               "--db-password=$${KC_DB_PASSWORD}",
-               "--http-relative-path=$${KC_HTTP_RELATIVE_PATH}"] # [ "start-dev" ]
+    command: [ "start"
+#                ,
+#               "--hostname=localhost",
+#               "--http-enabled=true",
+#               "--hostname-strict=false",
+#               "--db=$${KC_DB}",
+#               "--db-url-host=$${KC_DB_URL_HOST}",
+#               "--db-url=jdbc:mysql://$${KC_DB_URL_HOST}:3306/$${KC_DB_URL_DATABASE}?characterEncoding=UTF-8",
+#               "--db-username=$${KC_DB_USERNAME}",
+#               "--db-password=$${KC_DB_PASSWORD}",
+#               "--http-relative-path=$${KC_HTTP_RELATIVE_PATH}"
+            ] # [ "start-dev" ]
