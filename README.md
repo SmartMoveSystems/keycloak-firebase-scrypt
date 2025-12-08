@@ -1,4 +1,4 @@
-# Keycloak Firebase Scrypt
+# Keycloak Firebase Scrypt - Keycloak 26+ (Quarkus version)
 
 Add a password hash provider to handle password hashing with the custom [Firebase Scrypt](https://github.com/firebase/scrypt) algorithm inside Keycloak.
 Implementation adapted from [firebase-scrypt-java](https://github.com/SmartMoveSystems/firebase-scrypt-java) and [leroyguillaume/keycloak-bcrypt](https://github.com/leroyguillaume/keycloak-bcrypt).
@@ -11,7 +11,7 @@ Implementation adapted from [firebase-scrypt-java](https://github.com/SmartMoveS
 ## Download latest built version
 
 ```
-curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/download/3.0.3/keycloak-firebase-scrypt-3.0.3.jar > KEYCLOAK_HOME/standalone/deployments/keycloak-firebase-scrypt-3.0.3.jar
+curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/download/3.0.4/keycloak-firebase-scrypt-3.0.4.jar > /opt/keycloak/providers/keycloak-firebase-scrypt-3.0.4.jar
 ```
 
 ## Run
@@ -20,7 +20,7 @@ curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/do
 
 ```bash
 cp deploy.cli docker/
-cp build/libs/keycloak-firebase-scrypt-3.0.3.jar docker/
+cp build/libs/keycloak-firebase-scrypt-3.0.4.jar docker/
 docker-compose up -d
 ```
 
@@ -29,22 +29,18 @@ docker-compose up -d
 Deploy module:
 
 ```
-$KEYCLOAK_HOME/bin/jboss-cli.sh --command="module add --name=com.smartmovesystems.keycloak.firebasescrypt --resources=build/libs/keycloak-firebase-scrypt-3.0.3.jar --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-services,org.keycloak.keycloak-model-jpa,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,javax.ws.rs.api,javax.persistence.api,org.hibernate,org.javassist,org.liquibase"
+cp keycloak-firebase-scrypt-3.0.4.jar /opt/keycloak/providers/
 ```
-
-Register provider in `standalone/configuration/standalone.xml`:
-
-```
-<providers>
-    ...
-    <provider>module:com.smartmovesystems.keycloak.firebasescrypt</provider>
-</providers>
-```
-
-Run `$KEYCLOAK_HOME/bin/standalone.sh`
+(Restart Keycloak?)
 
 ## How to use
-Go to `Authentication` / `Password policy` and add hashing algorithm policy with value `firebase-scrypt`.
+
+Set password policy for hash algorithm for a realm:
+
+```
+$KEYCLOAK_HOME/bin/kcadm.sh update realms/<RealmName> -s 'passwordPolicy="hashAlgorithm(firebase-scrypt)"'
+```
+Or, go to `Authentication` / `Password policy` and add hashing algorithm policy with value `firebase-scrypt`.
 
 ## Importing users and hashing parameters:
 
