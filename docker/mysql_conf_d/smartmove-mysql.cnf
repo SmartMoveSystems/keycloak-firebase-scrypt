@@ -1,0 +1,8 @@
+# SMARTMOVE - settings for MySQL InnoDB Cluster 8.0 support
+[mysqld]
+server_id=1234
+enforce_gtid_consistency=ON
+gtid_mode=ON
+# this one needs removing for 8.4 support
+#binlog_transaction_dependency_tracking=WRITESET
+

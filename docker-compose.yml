@@ -8,17 +8,17 @@ volumes:
 
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: keycloak-firebase-scrypt-mysql
     volumes:
       - mysql_data:/var/lib/mysql
       # add any custom mysql configuration here (e.g. ./docker/mysql_conf_d/custom-mysql.cnf)
       - ./docker/mysql_conf_d/:/etc/mysql/conf.d
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-mrp1234}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
       MYSQL_DATABASE: ${MYSQL_KC_DATABASE:-keycloak}
       MYSQL_USER: ${MYSQL_KC_USER:-keycloak}
-      MYSQL_PASSWORD: ${MYSQL_KC_PASSWORD:-mkc1234}
+      MYSQL_PASSWORD: ${MYSQL_KC_PASSWORD:-keycloakpass}
     hostname: mysql
     ports:
       - 3306:3306
@@ -40,10 +40,10 @@ services:
       KC_DB_URL_DATABASE: ${MYSQL_KC_DATABASE:-keycloak}
       KC_DB_URL_PROPERTIES: "?characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true"
       KC_DB_USERNAME: ${MYSQL_KC_USER:-keycloak}
-      KC_DB_PASSWORD: ${MYSQL_KC_PASSWORD:-mkc1234}
+      KC_DB_PASSWORD: ${MYSQL_KC_PASSWORD:-keycloakpass}
 
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-kcadmin1234}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
 
       KC_HOSTNAME_STRICT: false
       KC_PROXY_HEADERS: xforwarded
