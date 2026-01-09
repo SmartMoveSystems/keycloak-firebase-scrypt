@@ -11,7 +11,7 @@ Implementation adapted from [firebase-scrypt-java](https://github.com/SmartMoveS
 ## Download latest built version
 
 ```
-curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/download/3.0.4/keycloak-firebase-scrypt-3.0.4.jar > /opt/keycloak/providers/keycloak-firebase-scrypt-3.0.4.jar
+curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/download/4.0.0/keycloak-firebase-scrypt-4.0.0.jar > /opt/keycloak/providers/keycloak-firebase-scrypt-4.0.0.jar
 ```
 
 ## Run
@@ -20,7 +20,7 @@ curl -L https://github.com/SmartMoveSystems/keycloak-firebase-scrypt/releases/do
 
 ```bash
 cp deploy.cli docker/
-cp build/libs/keycloak-firebase-scrypt-3.0.4.jar docker/
+cp build/libs/keycloak-firebase-scrypt-4.0.0.jar docker/
 docker-compose up -d
 ```
 
@@ -29,7 +29,7 @@ docker-compose up -d
 Deploy module:
 
 ```
-cp keycloak-firebase-scrypt-3.0.4.jar /opt/keycloak/providers/
+cp keycloak-firebase-scrypt-4.0.0.jar /opt/keycloak/providers/
 ```
 (Restart Keycloak?)
 

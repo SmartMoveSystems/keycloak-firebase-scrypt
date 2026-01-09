@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.smartmovesystems.keycloak.firebasescrypt"
-version = "3.0.4"
+version = "4.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
