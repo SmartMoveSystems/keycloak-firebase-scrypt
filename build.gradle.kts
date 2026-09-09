@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.smartmovesystems.keycloak.firebasescrypt"
-version = "4.0.0"
+version = "4.0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -18,7 +18,7 @@ dependencies {
     val scryptVersion = "1.4.0"
     val commonsCodecVersion = "1.4"
     val jbossLoggingVersion = "3.4.1.Final"
-    val keycloakVersion = "26.4.6" //"12.0.4"
+    val keycloakVersion = "26.7.3" //"12.0.4"
     val jUnitVersion = "5.10.0"
     val quarkusVersion = "3.27.0"
 

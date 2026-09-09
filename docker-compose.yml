@@ -51,6 +51,10 @@ services:
       KC_LOG: console,file,syslog
       KC_HTTP_ENABLED: true
       KC_HTTP_RELATIVE_PATH: "/auth"
+      KC_HOSTNAME_DEBUG: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_HTTP_MANAGEMENT_PORT: 9000
     depends_on:
       mysql:
         condition: service_healthy
@@ -69,3 +73,9 @@ services:
 #               "--db-password=$${KC_DB_PASSWORD}",
 #               "--http-relative-path=$${KC_HTTP_RELATIVE_PATH}"
             ] # [ "start-dev" ]
+    healthcheck:
+      test: ["CMD-SHELL", "{ printf 'HEAD /auth/health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
